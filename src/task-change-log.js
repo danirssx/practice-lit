@@ -14,6 +14,7 @@ export class TaskChangeLog extends LitElement {
 
   static styles = css`
     :host { display: block; max-width: 36rem; margin: 0 auto; font-family: system-ui, sans-serif; }
+    :host([hidden]) { display: none; }
     ul { display: grid; gap: 0.5rem; padding: 0; list-style: none; }
     li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.65rem; border: 1px solid #d0d7de; }
     .entry { display: grid; gap: 0.15rem; }
