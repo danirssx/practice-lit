@@ -23,6 +23,7 @@ export class PracticeShell extends LitElement {
   static properties = {
     _activityLog: { state: true },
     _isActivityLogOpen: { state: true },
+    _boardViewCommand: { state: true }
   };
 
   constructor() {
@@ -30,6 +31,7 @@ export class PracticeShell extends LitElement {
     this._activityLog = [];
     this._isActivityLogOpen = true;
     this.#shortcuts = new TaskShortcutController(this, (command) => this.#handleShortcut(command));
+    this._boardViewCommand = null;
   }
 
   #addActivity(event) {
@@ -38,6 +40,13 @@ export class PracticeShell extends LitElement {
 
     const newEvent = new EventLog(action, id, title);
     this._activityLog = [newEvent, ...this._activityLog];
+    // event I will send to `task-board` that there's a task created
+    if (action === 'created') {
+      this._boardViewCommand = {
+        type: 'show-created-task',
+        taskId: id,
+      }
+    }
   }
 
   #handleShortcut(command) {
@@ -54,7 +63,9 @@ export class PracticeShell extends LitElement {
   render() {
     return html`
       <practice-task-form @task-board-change=${this.#addActivity}></practice-task-form>
-      <practice-task-board @task-board-change=${this.#addActivity}></practice-task-board>
+      <practice-task-board
+          .viewCommand=${this._boardViewCommand}
+          @task-board-change=${this.#addActivity}></practice-task-board>
       <practice-task-change-log
         .entries=${this._activityLog}
         ?hidden=${!this._isActivityLogOpen}

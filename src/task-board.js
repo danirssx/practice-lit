@@ -15,6 +15,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     draftTitle: { state: true },
     _selectedFilter: { state: true },
     _query: { state: true },
+    viewCommand: { attribute: false },
   };
 
   static styles = css`
@@ -49,6 +50,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     this.draftTitle = '';
     this._selectedFilter = Filter.ALL;
     this._query = '';
+    this.viewCommand = null;
     this._inputRef = createRef();
     this._searchRef = createRef();
   }
@@ -115,6 +117,17 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
   }
 
   /**
+   * Here I will listen if there was a 'show-created-task' and clear search bar
+   */
+
+  willUpdate(changedProperties) {
+    if (changedProperties.has('viewCommand')) {
+      this._query = '';
+      this._selectedFilter = Filter.ALL;
+     }
+   }
+
+  /**
    * Focus input of search when it's first rendered the content
    */
   firstUpdated() {
@@ -136,6 +149,8 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
   render() {
     const tasks = taskStore.tasks;
     const visibleTasks = this.#visibleTasks(tasks);
+
+    console.log("View Command: ", this.viewCommand);
 
     return html`
       <input
