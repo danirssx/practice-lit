@@ -54,6 +54,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     this.viewCommand = null;
     this._inputRef = createRef();
     this._searchRef = createRef();
+    this._targetDeleteId = 0;
   }
 
   #startEditing(task) {
@@ -74,7 +75,9 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
   }
 
   #deleteTask(id, title) {
-    if (!id) return;
+    if (!id) return false;
+
+    // The shell may veto this request before the board performs its default delete.
     const allowed = this.dispatchEvent(new CustomEvent('task-delete-request', {
       detail: { id, title },
       composed: true,
@@ -82,15 +85,14 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       cancelable: true,
     }));
 
-    console.log("Allowed: ", allowed);
+    if (!allowed || !taskStore.deleteTask(id)) return false;
 
-    if (allowed && taskStore.deleteTask(id)) {
-      this.dispatchEvent(new CustomEvent('task-board-change', {
-        detail: { id, action: 'deleted', title },
-        composed: true,
-        bubbles: true,
-      }));
-    }
+    this.dispatchEvent(new CustomEvent('task-board-change', {
+      detail: { id, action: 'deleted', title },
+      composed: true,
+      bubbles: true,
+    }));
+    return true;
   }
 
   #toggleTask(id, title) {
@@ -124,6 +126,25 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
 
       return statusMatches && queryMatches;
     });
+  }
+
+  async #handleDelete(task, index, visibleTasks) {
+    if (!task.id || !task.title) return;
+
+    // Capture the next surviving *visible* task before the store removes this one.
+    const targetId = visibleTasks[index + 1]?.id
+      ?? visibleTasks[index - 1]?.id
+      ?? null;
+
+    if (!this.#deleteTask(task.id, task.title)) return;
+
+    await this.updateComplete;
+    const targetControl = targetId === null
+      ? null
+      : [...this.renderRoot.querySelectorAll('[data-task-id]')]
+        .find((control) => control.dataset.taskId === targetId);
+
+    (targetControl ?? this._searchRef.value)?.focus();
   }
 
   /**
@@ -191,13 +212,14 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
           ? html`<p class="empty">No tasks match this filter or search.</p>`
         : html`
           <ul>
-            ${visibleTasks.map((task) => html`
+            ${visibleTasks.map((task, index) => html`
               <li class=${task.done ? 'done' : ''}>
                 <input
                   type="checkbox"
                   .checked=${task.done}
                   @change=${() => this.#toggleTask(task.id, task.title)}
                   aria-label="Mark ${task.title} complete"
+                  data-task-id=${task.id}
                 >
                 ${this.editingId === task.id
                   ? html`
@@ -215,7 +237,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
                     <span>${task.title}</span>
                     <button type="button" @click=${() => this.#startEditing(task)}>Edit</button>
                   `}
-                <button type="button" @click=${() => this.#deleteTask(task.id, task.title)}>Delete</button>
+                <button type="button" @click=${() => this.#handleDelete(task, index, visibleTasks)}>Delete</button>
                 <task-status-badge .status=${task.done ? 'done' : 'active'}></task-status-badge>
               </li>
             `)}
