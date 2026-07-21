@@ -61,7 +61,6 @@ export class PracticeShell extends LitElement {
   }
 
   #handleDeleteReq(e) {
-    console.log("Me estoy borrando: ", e);
     return true;
   }
 

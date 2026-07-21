@@ -21,8 +21,6 @@ export class TaskShortcutController {
         : null;
     if (!command) return;
 
-    console.log("Comando presionado", event);
-
     event.preventDefault();
     this.#onCommand(command);
   };

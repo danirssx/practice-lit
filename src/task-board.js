@@ -35,6 +35,10 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       outline: 3px solid green;
       outline-offset: 2px;
     }
+    button:focus {
+        outline: 1px solid green;
+        outline-offset: 1px;
+    }
     .search-input {
       box-sizing: border-box;
       width: 100%;
@@ -144,6 +148,8 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       : [...this.renderRoot.querySelectorAll('[data-task-id]')]
         .find((control) => control.dataset.taskId === targetId);
 
+    console.log(targetControl);
+
     (targetControl ?? this._searchRef.value)?.focus();
   }
 
@@ -219,7 +225,6 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
                   .checked=${task.done}
                   @change=${() => this.#toggleTask(task.id, task.title)}
                   aria-label="Mark ${task.title} complete"
-                  data-task-id=${task.id}
                 >
                 ${this.editingId === task.id
                   ? html`
@@ -237,7 +242,8 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
                     <span>${task.title}</span>
                     <button type="button" @click=${() => this.#startEditing(task)}>Edit</button>
                   `}
-                <button type="button" @click=${() => this.#handleDelete(task, index, visibleTasks)}>Delete</button>
+                <button type="button" data-task-id=${task.id}
+                    @click=${() => this.#handleDelete(task, index, visibleTasks)}>Delete</button>
                 <task-status-badge .status=${task.done ? 'done' : 'active'}></task-status-badge>
               </li>
             `)}
