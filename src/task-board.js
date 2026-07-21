@@ -1,7 +1,8 @@
 import { LitElement, html, css } from 'lit';
 import { SignalWatcher } from '@lit-labs/preact-signals';
-import { taskStore } from './app/container.js';
+import  { taskStore } from './app/container.js';
 import { createRef, ref } from 'lit/directives/ref.js';
+import './status-badge.js';
 
 const Filter = {
   ALL: 'all',
@@ -215,6 +216,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
                     <button type="button" @click=${() => this.#startEditing(task)}>Edit</button>
                   `}
                 <button type="button" @click=${() => this.#deleteTask(task.id, task.title)}>Delete</button>
+                <task-status-badge .status=${task.done ? 'done' : 'active'}></task-status-badge>
               </li>
             `)}
           </ul>
