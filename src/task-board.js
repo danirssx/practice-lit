@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { SignalWatcher } from '@lit-labs/preact-signals';
-import  { taskStore } from './app/container.js';
+import { taskStore } from './app/container.js';
 import { createRef, ref } from 'lit/directives/ref.js';
 import './status-badge.js';
 
