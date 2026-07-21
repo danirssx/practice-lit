@@ -1,0 +1,5 @@
+{"ts":"2026-07-20T14:59:33.109Z","v":"8.21.0","op":"generate","baselineTokens":2002,"actualTokens":488,"savedTokens":1514,"savedPct":75.6,"durationMs":82,"model":null,"ok":true}
+{"ts":"2026-07-20T15:00:11.436Z","v":"8.21.0","op":"generate","baselineTokens":2002,"actualTokens":488,"savedTokens":1514,"savedPct":75.6,"durationMs":69,"model":null,"ok":true}
+{"ts":"2026-07-20T15:06:50.991Z","v":"8.21.0","op":"ask","baselineTokens":2002,"actualTokens":242,"savedTokens":1760,"savedPct":87.9,"durationMs":21,"model":"gpt-4o","ok":true}
+{"ts":"2026-07-20T15:12:26.366Z","v":"8.21.0","op":"ask","baselineTokens":2002,"actualTokens":242,"savedTokens":1760,"savedPct":87.9,"durationMs":19,"model":"gpt-4o","ok":true}
+{"ts":"2026-07-20T15:21:54.182Z","v":"8.21.0","op":"ask","baselineTokens":2002,"actualTokens":242,"savedTokens":1760,"savedPct":87.9,"durationMs":20,"model":"gpt-4o","ok":true}

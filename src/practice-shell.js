@@ -60,11 +60,17 @@ export class PracticeShell extends LitElement {
     }
   }
 
+  #handleDeleteReq(e) {
+    console.log("Me estoy borrando: ", e);
+    return true;
+  }
+
   render() {
     return html`
       <practice-task-form @task-board-change=${this.#addActivity}></practice-task-form>
       <practice-task-board
           .viewCommand=${this._boardViewCommand}
+          @task-delete-request=${(e) => this.#handleDeleteReq(e)}
           @task-board-change=${this.#addActivity}></practice-task-board>
       <practice-task-change-log
         .entries=${this._activityLog}

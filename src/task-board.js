@@ -74,7 +74,16 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
 
   #deleteTask(id, title) {
     if (!id) return;
-    if (taskStore.deleteTask(id)) {
+    const allowed = this.dispatchEvent(new CustomEvent('task-delete-request', {
+      detail: { id, title },
+      composed: true,
+      bubbles: true,
+      cancelable: true,
+    }));
+
+    console.log("Allowed: ", allowed);
+
+    if (allowed && taskStore.deleteTask(id)) {
       this.dispatchEvent(new CustomEvent('task-board-change', {
         detail: { id, action: 'deleted', title },
         composed: true,
@@ -121,7 +130,8 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
    */
 
   willUpdate(changedProperties) {
-    if (changedProperties.has('viewCommand')) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('viewCommand') && this.viewCommand?.type === 'show-created-task') {
       this._query = '';
       this._selectedFilter = Filter.ALL;
      }
@@ -149,8 +159,6 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
   render() {
     const tasks = taskStore.tasks;
     const visibleTasks = this.#visibleTasks(tasks);
-
-    console.log("View Command: ", this.viewCommand);
 
     return html`
       <input
