@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { SignalWatcher } from '@lit-labs/preact-signals';
-import { taskStore } from './app/container.js';
+import { taskStore, userStore } from './app/container.js';
 import { createRef, ref } from 'lit/directives/ref.js';
 import './status-badge.js';
 
@@ -15,6 +15,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     editingId: { state: true },
     draftTitle: { state: true },
     _selectedFilter: { state: true },
+    _selectedUser: { state: true },
     _query: { state: true },
     viewCommand: { attribute: false },
   };
@@ -64,6 +65,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     this.editingId = null;
     this.draftTitle = '';
     this._selectedFilter = Filter.ALL;
+    this._selectedUser = 'all';
     this._query = '';
     this.viewCommand = null;
     this._inputRef = createRef();
@@ -138,7 +140,10 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
           : true;
       const queryMatches = !query || task.title.toLowerCase().includes(query);
 
-      return statusMatches && queryMatches;
+      // Filter user
+      if (this._selectedUser === 'all') return statusMatches && queryMatches;
+      const filterUser = this._selectedUser === task.user;
+      return filterUser && statusMatches && queryMatches;
     });
   }
 
@@ -159,6 +164,10 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
         .find((control) => control.dataset.taskId === targetId);
 
     (targetControl ?? this._searchRef.value)?.focus();
+  }
+
+  #handleUserSelect(event) {
+    this._selectedUser = event.target.value;
   }
 
   /**
@@ -195,6 +204,9 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
   render() {
     const tasks = taskStore.tasks;
     const visibleTasks = this.#visibleTasks(tasks);
+    const visibleUsers = userStore.users;
+
+    console.log("lista users", visibleUsers);
 
     return html`
       <input
@@ -208,6 +220,19 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       >
       <div class="container-filter">
         <label for="task-status-filter">Show tasks</label>
+        ${visibleUsers &&
+        html`<select
+            id="task-user-filter"
+            class="filter-select"
+            .value=${this._selectedFilter}
+            @change=${this.#handleUserSelect}
+        >
+            <option value="all">All Users</option>
+            ${visibleUsers.map((user) =>
+              html`<option value=${user.username}>${user.username}</option>`
+            )}
+        </select>`
+        }
         <select
           id="task-status-filter"
           class="filter-select"

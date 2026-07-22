@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { SignalWatcher } from '@lit-labs/preact-signals';
 import { taskStore } from './app/container.js';
+import { createRef, ref } from 'lit/directives/ref.js';
 
 export class PracticeTaskForm extends SignalWatcher(LitElement) {
   static properties = {
@@ -19,6 +20,7 @@ export class PracticeTaskForm extends SignalWatcher(LitElement) {
   constructor() {
     super();
     this.draft = '';
+    this._inputRef = createRef();
   }
 
   #onInput(event) {
@@ -38,12 +40,19 @@ export class PracticeTaskForm extends SignalWatcher(LitElement) {
     }
   }
 
+  updated(changedProperties) {
+    if (!this._inputRef) return;
+    if (changedProperties.has('userInfo')) {
+      this._inputRef.value?.focus();
+    }
+  }
+
   render() {
     const count = taskStore.tasks.length;
     return html`
       <h1>Add a task</h1>
       <form @submit=${this.#onSubmit}>
-        <input .value=${this.draft} @input=${this.#onInput} placeholder="Task title" aria-label="Task title">
+        <input .value=${this.draft} @input=${this.#onInput} placeholder="Task title" aria-label="Task title" ${ref(this._inputRef)}>
         <button type="submit">Add</button>
       </form>
       <p>Shared store contains ${count} task${count === 1 ? '' : 's'}.</p>
