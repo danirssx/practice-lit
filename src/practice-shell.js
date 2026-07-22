@@ -1,4 +1,5 @@
 import { LitElement, html } from 'lit';
+import './lit-debug-log.js';
 import './task-form.js';
 import './task-board.js';
 import './task-change-log.js';
@@ -89,7 +90,7 @@ export class PracticeShell extends LitElement {
 
   render() {
 
-    console.log("User: ", this._userInfo);
+    // console.log("User: ", this._userInfo);
 
       return html`
         <user-header

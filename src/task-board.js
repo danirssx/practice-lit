@@ -206,7 +206,7 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     const visibleTasks = this.#visibleTasks(tasks);
     const visibleUsers = userStore.users;
 
-    console.log("lista users", visibleUsers);
+    // console.log("lista users", visibleUsers);
 
     return html`
       <input
