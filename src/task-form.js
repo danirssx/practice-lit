@@ -5,6 +5,7 @@ import { taskStore } from './app/container.js';
 export class PracticeTaskForm extends SignalWatcher(LitElement) {
   static properties = {
     draft: { state: true },
+    userInfo: {},
   };
 
   static styles = css`
@@ -26,7 +27,7 @@ export class PracticeTaskForm extends SignalWatcher(LitElement) {
 
   #onSubmit(event) {
     event.preventDefault();
-    const newTask = taskStore.createTask(this.draft);
+    const newTask = taskStore.createTask(this.draft, this.userInfo?.username);
     if (newTask) {
       this.dispatchEvent(new CustomEvent('task-board-change', {
         detail: { id: newTask.id, action: 'created', title: newTask.title },

@@ -1,10 +1,11 @@
 import { signal } from '@lit-labs/preact-signals';
 
 export class Task {
-  constructor(id, title, done = false) {
+  constructor(id, title, user = '') {
     this.id = id;
     this.title = title;
-    this.done = done;
+    this.done = false;
+    this.user = user;
   }
 }
 
@@ -19,11 +20,11 @@ export class TaskStore {
     return this.#list.value;
   }
 
-  createTask(text) {
+  createTask(text, user = '') {
     const title = (text || '').trim();
     if (!title) return null;
 
-    const task = new Task(crypto.randomUUID(), title);
+    const task = new Task(crypto.randomUUID(), title, user);
     this.#list.value = [...this.#list.value, task];
     return task;
   }

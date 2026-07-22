@@ -21,7 +21,13 @@ export class UserStore {
     return this.#list.value;
   }
 
+  find(user) {
+    return this.#list.value.find((item) => user.username === item.username);
+  }
+
   createUser(username, email) {
+    const userFind = this.find({ username: username, email: email });
+    if (userFind) return userFind;
     const normalizedUsername = (username || '').trim();
     const normalizedEmail = (email || '').trim().toLowerCase();
     if (!normalizedUsername || !normalizedEmail) return null;

@@ -26,6 +26,12 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
     ul { display: grid; gap: 0.5rem; padding: 0; list-style: none; }
     li { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem; border: 1px solid #d0d7de; }
     li.done span { color: #57606a; text-decoration: line-through; }
+    .user-span {
+        text-decoration: none;
+        color: gray;
+        font-size: 0.75rem;
+        font-weight: 200;
+    }
     li button { margin-left: auto; }
     .empty { color: #57606a; }
     .container-filter { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
@@ -46,6 +52,10 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       padding: 0.5rem;
       border-radius: 0.25rem;
       margin-bottom: 20px;
+    }
+    .info-task-label {
+        display: flex;
+        flex-direction: column;
     }
   `;
 
@@ -148,8 +158,6 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
       : [...this.renderRoot.querySelectorAll('[data-task-id]')]
         .find((control) => control.dataset.taskId === targetId);
 
-    console.log(targetControl);
-
     (targetControl ?? this._searchRef.value)?.focus();
   }
 
@@ -238,8 +246,12 @@ export class PracticeTaskBoard extends SignalWatcher(LitElement) {
                     <button type="button" @click=${() => this.#saveEdit(task.id)}>Save</button>
                     <button type="button" @click=${() => { this.editingId = null; }}>Cancel</button>
                   `
-                  : html`
-                    <span>${task.title}</span>
+                : html`
+                      <div class="info-task-label">
+                          <span>${task.title}</span>
+                          <span class="user-span">${task.user}</span>
+                      </div>
+                      </div>
                     <button type="button" @click=${() => this.#startEditing(task)}>Edit</button>
                   `}
                 <button type="button" data-task-id=${task.id}

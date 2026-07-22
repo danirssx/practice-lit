@@ -3,6 +3,7 @@ import './task-form.js';
 import './task-board.js';
 import './task-change-log.js';
 import { TaskShortcutController } from './task-shortcut-controller.js';
+import './user-header.js';
 
 export class EventLog {
   constructor(action, taskId, title, timestamp = Date.now()) {
@@ -23,7 +24,8 @@ export class PracticeShell extends LitElement {
   static properties = {
     _activityLog: { state: true },
     _isActivityLogOpen: { state: true },
-    _boardViewCommand: { state: true }
+    _boardViewCommand: { state: true },
+    _userInfo: { state: true }
   };
 
   constructor() {
@@ -32,6 +34,7 @@ export class PracticeShell extends LitElement {
     this._isActivityLogOpen = true;
     this.#shortcuts = new TaskShortcutController(this, (command) => this.#handleShortcut(command));
     this._boardViewCommand = null;
+    this._userInfo = null;
   }
 
   #addActivity(event) {
@@ -47,6 +50,17 @@ export class PracticeShell extends LitElement {
         taskId: id,
       }
     }
+  }
+
+  #handleUserCreated(event) {
+    const user = event.detail;
+    if (!user?.id || !user.username) return;
+
+    this._userInfo = user;
+    this._activityLog = [
+      new EventLog('User Created', user.id, user.username),
+      ...this._activityLog,
+    ];
   }
 
   #handleShortcut(command) {
@@ -65,8 +79,15 @@ export class PracticeShell extends LitElement {
   }
 
   render() {
-    return html`
-      <practice-task-form @task-board-change=${this.#addActivity}></practice-task-form>
+
+    console.log("User: ", this._userInfo);
+
+      return html`
+        <user-header
+          .userInfo=${this._userInfo}
+          @user-created=${this.#handleUserCreated}
+        ></user-header>
+      <practice-task-form @task-board-change=${this.#addActivity} .userInfo=${this._userInfo}></practice-task-form>
       <practice-task-board
           .viewCommand=${this._boardViewCommand}
           @task-delete-request=${(e) => this.#handleDeleteReq(e)}
