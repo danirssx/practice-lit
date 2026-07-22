@@ -25,7 +25,8 @@ export class PracticeShell extends LitElement {
     _activityLog: { state: true },
     _isActivityLogOpen: { state: true },
     _boardViewCommand: { state: true },
-    _userInfo: { state: true }
+    _userInfo: { state: true },
+    _editMode: { state: true }
   };
 
   constructor() {
@@ -35,6 +36,7 @@ export class PracticeShell extends LitElement {
     this.#shortcuts = new TaskShortcutController(this, (command) => this.#handleShortcut(command));
     this._boardViewCommand = null;
     this._userInfo = null;
+    this._editMode = false;
   }
 
   #addActivity(event) {
@@ -71,11 +73,18 @@ export class PracticeShell extends LitElement {
       case 'clear-log':
         this._activityLog = [];
         break;
+      case 'edit-mode':
+        this._editMode = !this._editMode;
     }
   }
 
   #handleDeleteReq(e) {
     return true;
+  }
+
+  #editModeHandler(event) {
+    this._editMode = event.detail.mode;
+    this.#addActivity(event);
   }
 
   render() {
@@ -85,7 +94,9 @@ export class PracticeShell extends LitElement {
       return html`
         <user-header
           .userInfo=${this._userInfo}
+          .editMode=${this._editMode}
           @user-created=${this.#handleUserCreated}
+          @edit-activated=${(e) => this.#editModeHandler(e)}
         ></user-header>
       <practice-task-form @task-board-change=${this.#addActivity} .userInfo=${this._userInfo}></practice-task-form>
       <practice-task-board

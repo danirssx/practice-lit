@@ -14,21 +14,29 @@ export class TaskShortcutController {
     if (target instanceof Element && target.closest(EDITABLE_SELECTOR)) return;
     if (!event.altKey) return;
 
-    const command = event.code === 'KeyL'
-      ? 'toggle-log'
-      : event.code === 'KeyC'
-        ? 'clear-log'
-        : null;
+    const command = event.code;
     if (!command) return;
 
+    switch (command) {
+      case 'KeyL':
+        this._commandSelected = 'toggle-log';
+        break;
+      case 'KeyC':
+        this._commandSelected = 'clear-log';
+        break;
+      case 'KeyM':
+        this._commandSelected = 'edit-mode';
+    }
+
     event.preventDefault();
-    this.#onCommand(command);
+    this.#onCommand(this._commandSelected);
   };
 
   constructor(host, onCommand) {
     this.#host = host;
     this.#onCommand = onCommand;
     this.#host.addController(this);
+    this._commandSelected = '';
   }
 
   hostConnected() {
