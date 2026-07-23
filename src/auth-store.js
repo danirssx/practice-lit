@@ -1,4 +1,7 @@
 import { signal } from '@lit-labs/preact-signals';
+import { createLogger } from './platform/logger.js';
+
+const log = createLogger('users');
 
 export class User {
   constructor(id, username, email) {
@@ -15,6 +18,7 @@ export class UserStore {
 
   constructor(initialUsers = []) {
     this.#list.value = Array.isArray(initialUsers) ? initialUsers : [];
+    log.debug({ initialUserCount: this.#list.value.length }, 'user store initialized');
   }
 
   get users() {
@@ -27,14 +31,25 @@ export class UserStore {
 
   createUser(username, email) {
     const userFind = this.find({ username: username, email: email });
-    if (userFind) return userFind;
+    if (userFind) {
+      log.info({ userId: userFind.id, username: userFind.username }, 'existing user returned');
+      return userFind;
+    }
     const normalizedUsername = (username || '').trim();
     const normalizedEmail = (email || '').trim().toLowerCase();
-    if (!normalizedUsername || !normalizedEmail) return null;
-    if (this.#hasEmail(normalizedEmail) || this.#hasUsername(normalizedUsername)) return null;
+    if (!normalizedUsername || !normalizedEmail) {
+      log.warn({ reason: !normalizedUsername ? 'missing-username' : 'missing-email' }, 'user creation rejected');
+      return null;
+    }
+    if (this.#hasEmail(normalizedEmail) || this.#hasUsername(normalizedUsername)) {
+      log.warn({ username: normalizedUsername, reason: 'duplicate-user' }, 'user creation rejected');
+      return null;
+    }
 
     const newUser = new User(crypto.randomUUID(), normalizedUsername, normalizedEmail);
     this.#list.value = [...this.#list.value, newUser];
+    // Deliberately exclude email from logs: observability should not leak personal data.
+    log.info({ userId: newUser.id, username: newUser.username }, 'user created');
     return newUser;
   }
 
