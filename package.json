@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:quiet": "cross-env VITE_DISABLE_ROARR=true vite",
+    "dev:quiet": "vite --mode quiet",
     "build": "vite build",
-    "build:quiet": "cross-env VITE_DISABLE_ROARR=true vite build",
+    "build:quiet": "vite build --mode quiet",
+    "test": "node --test test/*.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,7 +17,6 @@
     "roarr": "^7.21.6"
   },
   "devDependencies": {
-    "cross-env": "^10.1.0",
     "vite": "^8.1.5"
   }
 }

@@ -34,19 +34,31 @@ npm run dev
 npm run build
 ```
 
-Use the quiet commands to build or run the same application with every Roarr logger
-replaced by a no-op stub:
+Normal commands read the ignored local `.env` file:
+
+```dotenv
+ROARR_DISABLED=false
+```
+
+Set `ROARR_DISABLED=true` when you want all normal commands to be quiet. Missing,
+malformed, and other values keep logging enabled. The exact lowercase string `true`
+is the only value that disables Roarr.
+
+The quiet commands always override that file, so they are useful for a one-off quiet
+run without editing `.env`:
 
 ```sh
 npm run dev:quiet
 npm run build:quiet
 ```
 
-Quiet mode is selected before Vite bundles the application. It aliases the `roarr`
-package to a compatible stub, so log calls do not create packets or console output.
-It also leaves `globalThis.ROARR.write` undefined and does not install
-`window.practiceDebug`. The application state and UI still behave normally; only
-logging is disabled.
+Vite reads only this one unprefixed key while its Node-side configuration runs. A
+small built-in Node reader handles comments, whitespace, quotes, and later
+assignments; it does not load or expose any other `.env` setting. Quiet mode aliases
+`roarr` to a compatible stub and does not expose the raw value through
+`import.meta.env` or as a browser runtime setting. Disabled mode leaves
+`globalThis.ROARR.write` and `window.practiceDebug` undefined. The application state
+and UI still behave normally; only Roarr logging is disabled.
 
 ## About development
 

@@ -10,7 +10,9 @@
 
 import { Roarr, getLogLevelName } from 'roarr';
 
-const ROARR_DISABLED = import.meta.env?.VITE_DISABLE_ROARR === 'true';
+// The build config aliases `roarr` to a stub when its private Node-side .env
+// decision disables it. The marker comes from that stub, not from import.meta.env.
+const ROARR_DISABLED = globalThis.ROARR?.__disabled === true;
 
 const LEVEL_COLORS = {
   trace: '#6b7280',
@@ -58,8 +60,8 @@ export function createLogger(namespace) {
 // Call once, before application stores start doing work. Roarr serializes each log
 // record; this writer turns that record into a readable, filterable browser console log.
 export function initLogger() {
-  // The quiet Vite mode aliases `roarr` to a no-op module. Do not install a writer
-  // or DevTools controls in that mode, so no packet can reach the console.
+  // The disabled Vite build aliases `roarr` to a no-op module. Do not install a
+  // writer or DevTools controls in that mode, so no packet can reach the console.
   if (ROARR_DISABLED) return;
 
   globalThis.ROARR = globalThis.ROARR || {};

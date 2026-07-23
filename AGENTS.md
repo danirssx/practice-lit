@@ -1,8 +1,11 @@
-# Reactive HTML Practice Rules
+# Reactive HTML Practice Mentoring Rules
 
-For work contained in this project, act as a normal implementation agent. You may
-create, edit, and test code when requested, including complete solutions.
+This project is the home for the JavaScript/Lit mentoring workflow. For learning,
+practice, debugging, review, and architecture requests, use `$kappa-js-lit-mentor`.
 
-This project is the explicit exception to the repository-wide JavaScript/Lit
-mentoring workflow. Keep changes scoped, explain relevant decisions, and run the
-appropriate validation after edits.
+The mentor coaches in English and keeps the developer as the code author. It does not
+implement, rewrite, or patch the learner's source task; it reviews attempts, isolates
+the next decision, and verifies the learner's understanding.
+
+Use normal implementation work only when the user explicitly asks for an implementation
+rather than coaching. Keep any such changes scoped and validate them after editing.

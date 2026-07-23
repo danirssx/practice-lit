@@ -1,4 +1,5 @@
-// Build-time replacement for the `roarr` package used by VITE_DISABLE_ROARR=true.
+// Build-time replacement for the `roarr` package selected when .env contains
+// ROARR_DISABLED=true. `__disabled` is an internal module marker, not the .env value.
 // It preserves Roarr's public logger shape so every existing log call is safe, while
 // deliberately producing no packet, console output, or async context.
 
@@ -19,8 +20,8 @@ function createNoopLogger() {
   return logger;
 }
 
-// Replace any pre-existing global state: quiet mode has no `write` route.
-export const ROARR = globalThis.ROARR = {};
+// Replace any pre-existing global state: disabled mode has no `write` route.
+export const ROARR = globalThis.ROARR = { __disabled: true };
 export const Roarr = createNoopLogger();
 
 export const logLevels = {
