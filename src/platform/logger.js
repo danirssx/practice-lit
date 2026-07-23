@@ -10,6 +10,8 @@
 
 import { Roarr, getLogLevelName } from 'roarr';
 
+const ROARR_DISABLED = import.meta.env?.VITE_DISABLE_ROARR === 'true';
+
 const LEVEL_COLORS = {
   trace: '#6b7280',
   debug: '#2563eb',
@@ -56,6 +58,10 @@ export function createLogger(namespace) {
 // Call once, before application stores start doing work. Roarr serializes each log
 // record; this writer turns that record into a readable, filterable browser console log.
 export function initLogger() {
+  // The quiet Vite mode aliases `roarr` to a no-op module. Do not install a writer
+  // or DevTools controls in that mode, so no packet can reach the console.
+  if (ROARR_DISABLED) return;
+
   globalThis.ROARR = globalThis.ROARR || {};
   globalThis.ROARR.write = (serialized) => {
     try {
